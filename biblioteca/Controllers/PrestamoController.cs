@@ -18,59 +18,6 @@ namespace biblioteca.Controllers
         }
 
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<PrestamoDto>>> GetPrestamos()
-        {
-            var prestamos = await _context.Prestamos
-                .Include(p => p.Persona)
-                .Include(p => p.Material)
-                .Select(p => new PrestamoDto
-                {
-                    Id = p.Id,
-                    PersonaId = p.PersonaId,
-                    PersonaNombre = p.Persona.Nombre,
-                    PersonaCedula = p.Persona.Cedula,
-                    MaterialId = p.MaterialId,
-                    MaterialTitulo = p.Material.Titulo,
-                    FechaPrestamo = p.FechaPrestamo,
-                    FechaDevolucion = p.FechaDevolucion,
-                    Devuelto = p.Devuelto
-                })
-                .ToListAsync();
-
-            return Ok(prestamos);
-        }
-
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<PrestamoDto>> GetPrestamo(int id)
-        {
-            var prestamo = await _context.Prestamos
-                .Include(p => p.Persona)
-                .Include(p => p.Material)
-                .FirstOrDefaultAsync(p => p.Id == id);
-
-            if (prestamo == null)
-            {
-                return NotFound();
-            }
-
-            var prestamoDto = new PrestamoDto
-            {
-                Id = prestamo.Id,
-                PersonaId = prestamo.PersonaId,
-                PersonaNombre = prestamo.Persona.Nombre,
-                PersonaCedula = prestamo.Persona.Cedula,
-                MaterialId = prestamo.MaterialId,
-                MaterialTitulo = prestamo.Material.Titulo,
-                FechaPrestamo = prestamo.FechaPrestamo,
-                FechaDevolucion = prestamo.FechaDevolucion,
-                Devuelto = prestamo.Devuelto
-            };
-
-            return Ok(prestamoDto);
-        }
-
 
         [HttpPost]
         public async Task<ActionResult<PrestamoDto>> CreatePrestamo(CreatePrestamoDto prestamoDto)
@@ -146,8 +93,6 @@ namespace biblioteca.Controllers
         }
 
 
-
-
         [HttpPost("devolucion")]
         public async Task<ActionResult<PrestamoDto>> RegistrarDevolucion(DevolucionDto devolucionDto)
         {
@@ -197,7 +142,37 @@ namespace biblioteca.Controllers
         }
 
 
-        [HttpGet("historial")]
+        [HttpGet("{id}")]
+        public async Task<ActionResult<PrestamoDto>> GetPrestamo(int id)
+        {
+            var prestamo = await _context.Prestamos
+                .Include(p => p.Persona)
+                .Include(p => p.Material)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (prestamo == null)
+            {
+                return NotFound();
+            }
+
+            var prestamoDto = new PrestamoDto
+            {
+                Id = prestamo.Id,
+                PersonaId = prestamo.PersonaId,
+                PersonaNombre = prestamo.Persona.Nombre,
+                PersonaCedula = prestamo.Persona.Cedula,
+                MaterialId = prestamo.MaterialId,
+                MaterialTitulo = prestamo.Material.Titulo,
+                FechaPrestamo = prestamo.FechaPrestamo,
+                FechaDevolucion = prestamo.FechaDevolucion,
+                Devuelto = prestamo.Devuelto
+            };
+
+            return Ok(prestamoDto);
+        }
+
+
+        [HttpGet("historial-completo")]
         public async Task<ActionResult<IEnumerable<PrestamoDto>>> GetHistorial()
         {
             var prestamos = await _context.Prestamos
@@ -245,6 +220,32 @@ namespace biblioteca.Controllers
                 .ToListAsync();
 
             return Ok(prestamosActivos);
+        }
+
+
+        [HttpGet("devueltos")]
+        public async Task<ActionResult<IEnumerable<PrestamoDto>>> GetPrestamosDevueltos()
+        {
+            var prestamosDevueltos = await _context.Prestamos
+                .Include(p => p.Persona)
+                .Include(p => p.Material)
+                .Where(p => p.Devuelto)
+                .OrderByDescending(p => p.FechaDevolucion)
+                .Select(p => new PrestamoDto
+                {
+                    Id = p.Id,
+                    PersonaId = p.PersonaId,
+                    PersonaNombre = p.Persona.Nombre,
+                    PersonaCedula = p.Persona.Cedula,
+                    MaterialId = p.MaterialId,
+                    MaterialTitulo = p.Material.Titulo,
+                    FechaPrestamo = p.FechaPrestamo,
+                    FechaDevolucion = p.FechaDevolucion,
+                    Devuelto = p.Devuelto
+                })
+                .ToListAsync();
+
+            return Ok(prestamosDevueltos);
         }
 
 

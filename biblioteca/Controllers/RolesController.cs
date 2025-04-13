@@ -57,6 +57,33 @@ namespace biblioteca.Controllers
         }
 
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateRol(int id, CreateRolDto rolDto)
+        {
+            // Buscar el rol existente
+            var rol = await _context.Roles.FindAsync(id);
+            if (rol == null)
+            {
+                return NotFound($"No se encontró el rol con ID {id}");
+            }
+
+            // Actualizar solo los campos permitidos
+            rol.RolName = rolDto.RolName;
+            rol.CapacidadPrestamo = rolDto.CapacidadPrestamo;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return NotFound();
+            }
+
+            return CreatedAtAction(nameof(GetRol), new { id = rol.Id }, rol);
+        }
+
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRol(int id)
         {
