@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace biblioteca.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class TipoMaterialController : Controller
     {
 
@@ -16,7 +18,7 @@ namespace biblioteca.Controllers
         }
 
 
-        [HttpGet("tipos-material")]
+        [HttpGet("")]
         public async Task<ActionResult<IEnumerable<TipoMaterialDto>>> GetTiposMaterial()
         {
             var tipos = await _context.TipoMateriales
@@ -31,7 +33,7 @@ namespace biblioteca.Controllers
         }
 
 
-        [HttpGet("tipos-material/{id}")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<TipoMaterialDto>> GetTipoMaterial(int id)
         {
             var tipoMaterial = await _context.TipoMateriales.FindAsync(id);
@@ -51,7 +53,7 @@ namespace biblioteca.Controllers
         }
 
 
-        [HttpPost("tipos-material")]
+        [HttpPost("")]
         public async Task<ActionResult<TipoMaterialDto>> CreateTipoMaterial(CreateTipoMaterialDto tipoDto)
         {
             var tipoMaterial = new TipoMaterial
@@ -72,7 +74,7 @@ namespace biblioteca.Controllers
         }
 
 
-        [HttpPut("tipos-material/{id}")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTipoMaterial(int id, CreateTipoMaterialDto tipoDto)
         {
             var tipoMaterial = await _context.TipoMateriales.FindAsync(id);
@@ -102,7 +104,7 @@ namespace biblioteca.Controllers
             return NoContent();
         }
 
-        [HttpDelete("tipos-material/{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTipoMaterial(int id)
         {
             var tipoMaterial = await _context.TipoMateriales.FindAsync(id);
